@@ -1,0 +1,11 @@
+query BoardsList {
+    boardsList {
+        items {
+            id
+            title
+            image {
+                downloadUrl
+            }
+        }
+    }
+}
