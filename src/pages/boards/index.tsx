@@ -6,11 +6,9 @@ import { Board } from '@/types';
 
 function Boards() {
     const { loading, error, data } = useQuery(boardsQuery);
-
     const boards = useMemo(() => {
         return data?.boardsList?.items || [];
     }, [data]);
-
     useEffect(() => {
       if (error) {
         console.error("Error loading boards:", error);

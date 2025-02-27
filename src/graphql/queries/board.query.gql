@@ -1,0 +1,25 @@
+query board($id: ID!) {
+  board(id: $id) {
+    id
+    title
+    image {
+      downloadUrl
+    }
+    order
+    tasks {
+      items {
+        id
+        title
+        dueAt
+        type
+      }
+    }
+    # labels {
+    #   items {
+    #     id
+    #     label
+    #     color
+    #   }
+    # }
+  }
+}
