@@ -10,18 +10,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@8base/auth": "^2.6.6",
     "@apollo/client": "^3.13.1",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
+    "@progress/kendo-react-popup": "^9.4.1",
+    "@reduxjs/toolkit": "^2.6.0",
     "@tailwindcss/vite": "^4.0.7",
     "@twicpics/components": "^0.32.0",
     "@types/uuid": "^10.0.0",
     "graphql": "^16.10.0",
+    "graphql-request": "^7.1.2",
     "lodash-es": "^4.17.21",
     "moment": "^2.30.1",
     "path": "^0.12.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-redux": "^9.2.0",
     "react-router": "^7.2.0",
     "react-router-dom": "^7.2.0",
     "tailwindcss": "^4.0.7",
@@ -50,5 +55,10 @@
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0",
     "vite-plugin-pages": "^0.32.5"
+  },
+  "overrides": {
+    "graphql-prettier": {
+      "graphql": ">=15.0.0"
+    }
   }
 }

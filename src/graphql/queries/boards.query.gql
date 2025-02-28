@@ -1,5 +1,5 @@
-query BoardsList {
-    boardsList {
+query BoardsList ($customFilter: BoardFilter) {
+    boardsList(filter: $customFilter) {
         items {
             id
             title
