@@ -29,7 +29,7 @@ const setAuthorizationLink = setContext((_, { headers }) => {
 // Error handling (bez hooków)
 const setErrorHandler = onError(({ graphQLErrors }) => {
   const badToken = graphQLErrors?.some(
-    (e) => e.extensions?.code === "TokenExpiredError" || e.extensions?.code === "InvalidTokenError"
+    (e) => e.code === "TokenExpiredError" || e.code === "InvalidTokenError"
   );
 
   if (badToken) {

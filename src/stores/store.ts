@@ -1,14 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authUserSlice";
+import alertsReducer from "./alertsSlice";
+import { alertsMiddleware } from "./alertsMiddleware";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    alerts: alertsReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(alertsMiddleware),
 });
 
-// Typy do użycia w całej aplikacji
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();

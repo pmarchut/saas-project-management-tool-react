@@ -1,0 +1,9 @@
+query LabelsList {
+  labelsList {
+    items {
+      id
+      label
+      color
+    }
+  }
+}

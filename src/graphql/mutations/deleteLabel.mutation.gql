@@ -1,0 +1,5 @@
+mutation deleteLabel($filter: LabelFilter!) {
+  labelDeleteByFilter(filter: $filter) {
+    success
+  }
+}

@@ -13,6 +13,7 @@ import './index.css'
 import "@twicpics/components/style.css"
 import TheNavbar from './components/TheNavbar'
 import TheDrawer from './components/TheDrawer'
+import TheAlerts from './components/TheAlerts'
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from "./graphql/apolloClient"
 import { Provider } from "react-redux"
@@ -24,7 +25,7 @@ installTwicpics( {
   domain: `${import.meta.env.VITE_TWICPICS_URL}`
 } );
 
-const authPages = ["/login", "/logout"];
+const authPages = ["/login"];
 const commonPages = ["/auth/callback"];
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
     <Suspense fallback={<p>Loading...</p>}>
       <TheNavbar />
       <TheDrawer />
+      <TheAlerts />
     </Suspense>
   )
 }

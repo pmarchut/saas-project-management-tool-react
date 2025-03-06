@@ -1,0 +1,7 @@
+mutation createLabel($data: LabelCreateInput!) {
+  labelCreate(data: $data) {
+    id
+    label
+    color
+  }
+}

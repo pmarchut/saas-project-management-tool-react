@@ -1,10 +1,15 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import boardsQuery from '@/graphql/queries/boards.query.gql';
 import { useEffect, useMemo } from 'react';
 import BoardCard from '@/components/BoardCard';
 import { Board } from '@/types';
+import { useAppDispatch, useAppSelector } from '@/stores/store';
+import createBoardMutation from "@/graphql/mutations/createBoard.mutation.gql";
+import { success, error } from '@/stores/alertsSlice';
 
 function Boards() {
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch()
   const idUser = localStorage.getItem("id_user");
   const boardsQueryVariables = useMemo(() => {
     return idUser ? {
@@ -22,15 +27,15 @@ function Boards() {
     }
     : undefined
   }, [idUser]);
-  const { loading, error, data } = useQuery(boardsQuery, { variables: boardsQueryVariables });
+  const { loading, error: boardsQueryError, data } = useQuery(boardsQuery, { variables: boardsQueryVariables });
   const boards = useMemo(() => {
       return data?.boardsList?.items || [];
   }, [data]);
   useEffect(() => {
-    if (error) {
-      console.error("Error loading boards:", error);
+    if (boardsQueryError) {
+      dispatch(error("Error loading boards"))
     }
-  }, [error]);
+  }, [boardsQueryError, dispatch]);
 
   const getCoolGradient = (index: number) => {
     let finalGradientString = ""
@@ -50,6 +55,33 @@ function Boards() {
     return finalGradientString;
   }
 
+  const [createBoard] = useMutation(createBoardMutation, {
+    update(cache, { data: { boardCreate } }) {
+      cache.updateQuery(
+        { query: boardsQuery, variables: boardsQueryVariables },
+        (res) => {
+          if (!res) return null;
+          return {
+            boardsList: {
+              items: [...res.boardsList.items, boardCreate],
+            },
+          };
+        }
+      );
+    },
+  });
+
+  async function handleBoardCreate() {
+    const newBoardPayload = {
+      data: {
+        team: { connect: { id: user?.team.items[0].id } },
+        title: "My New Board",
+      }
+    };
+    await createBoard({ variables: newBoardPayload });
+    dispatch(success("New Board Created!"));
+  }
+
   return (
     <>
       <h1 className="text-3xl mb-5">Boards</h1>
@@ -65,7 +97,7 @@ function Boards() {
             />
           </div>
         )}
-        <button className="text-gray-500">
+        <button className="text-gray-500" onClick={handleBoardCreate}>
           <span>New Board +</span>
         </button>
       </div>

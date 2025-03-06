@@ -1,0 +1,5 @@
+mutation deleteBoard($id: ID!) {
+  boardDelete(data: { id: $id }, force: true) {
+    success
+  }
+}

@@ -1,5 +1,5 @@
-query board($id: ID!) {
-  board(id: $id) {
+mutation updateBoard($data: BoardUpdateInput!, $filter: BoardKeyFilter!) {
+  boardUpdate(data: $data, filter: $filter) {
     id
     title
     image {
@@ -10,6 +10,8 @@ query board($id: ID!) {
       items {
         id
         title
+        createdAt
+        updatedAt
         dueAt
         type
       }

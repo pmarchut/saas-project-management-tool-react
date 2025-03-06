@@ -1,26 +1,35 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import TaskCard from "./TaskCard";
+import TaskCreator from "./TaskCreator";
 import type { Board, Column, Task } from '@/types';
 import { DndContext, DragStartEvent, DragOverlay, DragEndEvent, useSensors, useSensor, PointerSensor, DragOverEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal } from "react-dom";
-import { cloneDeep } from 'lodash-es';
+import { useAppDispatch } from "@/stores/store";
+import { error } from "@/stores/alertsSlice";
 
 interface Props {
   board: Board;
   tasks: Task[];
+  update: (order: Column[]) => Promise<void>;
+  addTask: (task: Partial<Task>) => Promise<Partial<Task>>;
 }
 
 const ColumnComponent = ({
   column,
   tasks,
-  updateColumn
+  updateColumn,
+  handleAddTask
 }: {
   column: Column;
   tasks: Task[];
-  updateColumn(column: Column): void
+  updateColumn(column: Column): void;
+  handleAddTask({ column, title }: {
+    column: Column;
+    title: string;
+  }): Promise<void>
 }) => {
   const { 
     setNodeRef, 
@@ -40,6 +49,10 @@ const ColumnComponent = ({
   const style = {
     transition,
     transform: CSS.Transform.toString(transform)
+  }
+
+  function create(title: string) {
+    handleAddTask({ column, title })
   }
 
   if (isDragging) {
@@ -85,14 +98,20 @@ const ColumnComponent = ({
           })}
         </SortableContext>
       </div>
+      <TaskCreator 
+        create={create} 
+      />
     </div>
   );
 };
 
 // Główny komponent tablicy
-function BoardDragAndDrop({ board, tasks }: Props) {
+function BoardDragAndDrop({ board, tasks, update, addTask }: Props) {
+  const dispatch = useAppDispatch()
+
   const [columns, setColumns] = useState<Column[]>(board.order || []);
   const columnsIds = useMemo(() => columns.map((col) => col.id), [columns])
+  const lastColumns = useRef(columns);
 
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
@@ -124,7 +143,8 @@ function BoardDragAndDrop({ board, tasks }: Props) {
     isDragOver.current = false
 
     if (needToSaveColumns.current.length) {
-      console.log(cloneDeep({ ...board, order: needToSaveColumns.current }));
+      update(needToSaveColumns.current);
+      lastColumns.current = needToSaveColumns.current
       needToSaveColumns.current = []
     }
 
@@ -251,6 +271,22 @@ function BoardDragAndDrop({ board, tasks }: Props) {
     setColumns(newColumns)
   }
 
+  async function handleAddTask({ column, title } : { column: Column, title: string }) {
+    const newTask = { title }
+    try {
+      const savedTask = await addTask(newTask);
+      const newColumns = columns.map((col) => {
+        if (col.id === column.id) return { ...col, taskIds: [...col.taskIds, String(savedTask.id)] }
+        return col
+      })
+      
+      setColumns(newColumns)
+    } catch (e) {
+      console.error(e);
+      dispatch(error("Error creating task!"))
+    }
+  }
+
   const isFirstRender = useRef(true);
   const isDragOver = useRef(false);
   const needToSaveColumns = useRef<Column[]>([]);
@@ -259,16 +295,19 @@ function BoardDragAndDrop({ board, tasks }: Props) {
     if (isFirstRender.current) {
       setTimeout(() => {
         isFirstRender.current = false;
-      }, 200)
+      }, 200);
       return;
     }
-
+  
     if (isDragOver.current) {
       return;
     }
-    
-    console.log(cloneDeep({ ...board, order: columns }));
-  }, [columns, board]);
+  
+    if (JSON.stringify(columns) !== JSON.stringify(lastColumns.current)) {
+      update(columns);
+      lastColumns.current = columns; // Zapisz nową wartość
+    }
+  }, [columns, update]);
 
   return (
     <DndContext
@@ -277,17 +316,20 @@ function BoardDragAndDrop({ board, tasks }: Props) {
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
     >
-      <div className="flex items-start py-12 overflow-x-scroll">
-        <SortableContext items={columnsIds}>
-          {columns.map((column) => (
-            <ColumnComponent
-              key={column.id}
-              column={column}
-              tasks={tasks}
-              updateColumn={updateColumn}
-            />
-          ))}
-        </SortableContext>
+      <div className="flex items-start py-12">
+        <div className="flex flex-grow-0 flex-shrink-0 overflow-x-scroll">
+          <SortableContext items={columnsIds}>
+            {columns.map((column) => (
+              <ColumnComponent
+                key={column.id}
+                column={column}
+                tasks={tasks}
+                updateColumn={updateColumn}
+                handleAddTask={handleAddTask}
+              />
+            ))}
+          </SortableContext>
+        </div>
         <button className="text-gray-500" onClick={() => setColumns([...columns, { id: uuidv4(), title: "New column", taskIds: [] }])}>
           New Column +
         </button>
@@ -300,6 +342,7 @@ function BoardDragAndDrop({ board, tasks }: Props) {
               column={activeColumn}
               tasks={tasks}
               updateColumn={updateColumn}
+              handleAddTask={handleAddTask}
             />
           )}
           {activeTask && (

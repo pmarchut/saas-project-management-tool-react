@@ -1,0 +1,7 @@
+mutation updateLabel($data: LabelUpdateInput!) {
+  labelUpdate(data: $data) {
+    id
+    label
+    color
+  }
+}
