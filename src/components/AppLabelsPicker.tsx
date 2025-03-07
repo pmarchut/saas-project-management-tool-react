@@ -98,11 +98,13 @@ function AppLabelsPicker(props: {
                         <input
                             className="w-3/4 bg-transparent outline-none" 
                             type="text"
-                            value={label.label}
-                            onChange={(event) => {
-                                handleUpdate(event.target.value, label)
-                                event.target.blur()
+                            defaultValue={label.label}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                  (event.target as HTMLInputElement).blur();
+                                }
                             }}
+                            onBlur={(event) => handleUpdate(event.target.value, label)}
                         />
                     </div>
                     <button
