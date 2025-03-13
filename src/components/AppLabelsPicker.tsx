@@ -55,21 +55,25 @@ function AppLabelsPicker(props: {
         props.delete(clone(label));
     }
 
-    function handleToggle(label: L) {
+    async function handleToggle(label: L) {
+        let newSelected = []
+
         if (selected.map((l) => l.id).includes(label.id)) {
-            setSelected(selected.filter((l) => l.id !== label.id))
+            newSelected = selected.filter((l) => l.id !== label.id)
+            await setSelected(newSelected)
 
             if (props.deselect)
                 props.deselect(clone(label));
         } else {
-            setSelected([...selected, label])
+            newSelected = [...selected, label]
+            await setSelected(newSelected)
 
             if (props.select)
                 props.select(clone(label));
         }
 
         if (props.selectionUpdate)
-            props.selectionUpdate(clone(selected));
+            props.selectionUpdate(newSelected);
     }
 
     function resetNewLabel() {
@@ -85,7 +89,7 @@ function AppLabelsPicker(props: {
             {props.labels.map((label) => (
                 <div 
                     key={label.id}
-                    className={`${label.color ? colorVariants[label.color] : ''} p-2 rounded text-white my-1 flex justify-between`}
+                    className={`${label.color ? colorVariants[label.color] : ''} p-2 rounded text-white my-0.5 inline-flex justify-between`}
                 >
                     <div className="flex items-center">
                         {props.loadingLabelId === label.id ? <AppLoader overlay={false} />

@@ -44,7 +44,7 @@ export interface Task extends Resource8base {
   title: string;
   description: string;
   labels: Label[];
-  dueAt: Date;
+  dueAt?: Date | string;
 
   // relationships
   board?: Partial<Board>;

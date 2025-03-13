@@ -17,7 +17,7 @@ import { useParams } from "react-router";
 import { useAppDispatch } from "@/stores/store";
 import { error, success } from "@/stores/alertsSlice";
 import type { Board, Column, Label, Task } from "@/types";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { cloneDeep } from 'lodash-es';
 
 function BoardItem() {
@@ -38,7 +38,7 @@ function BoardItem() {
   const tasks = useMemo(() => {
     return data?.board?.tasks?.items || []
   }, [data]);
-  const selectedLabels = useMemo(() => {
+  const selectedLabels = useMemo<Partial<Label>[]>(() => {
     return data?.board?.labels?.items || []
   }, [data]);
   useEffect(() => {
@@ -165,6 +165,26 @@ function BoardItem() {
   }
   const handleUpdateDragAndDrop = async (order: Column[]) => {
     handleUpdateBoard(cloneDeep({ ...board, order }))
+  }
+  const handleUpdateTask = async (t: Partial<Omit<Task, 'labels'> & { labels?: Partial<Label>[] }>) => {
+    await updateBoard({ variables: { 
+      data: { 
+        tasks: { 
+          update: {
+            data: { 
+              ...t,
+              comments: t.comments ? { create: t.comments } : undefined,
+              labels: t.labels 
+                ? { reconnect: t.labels.map((l) => ({ id: l.id })) }
+                : undefined,
+            },
+            filter: { id: t.id }
+          }
+        }
+      },
+      filter: { id: boardId }, 
+    }});
+    dispatch(success("You updated a board"));
   }
 
   const [updateLabel] = useMutation(updateLabelMutation, {
@@ -311,6 +331,18 @@ function BoardItem() {
         deselectLabel={handleDeselectLabel}
         deleteLabel={handleDeleteLabel}
         updateLabel={handleUpdateLabel}
+      />
+
+      <Outlet
+        context={{
+          loadingUpdateTask: loadingUpdateBoard,
+          labels,
+          updateTask: handleUpdateTask,
+          close: () => navigate(`/boards/${boardId}`),
+          createLabel: handleLabelCreate,
+          deleteLabel: handleDeleteLabel,
+          updateLabel: handleUpdateLabel
+        }}
       />
 
       {loading || labelsLoading || loadingUpdateBoard &&

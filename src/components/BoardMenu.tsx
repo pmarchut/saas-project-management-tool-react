@@ -63,7 +63,7 @@ function BoardMenu({
           anchorAlign={{ horizontal: 'right', vertical: 'bottom' }}
           popupAlign={{ horizontal: 'right', vertical: 'top' }}
           onMouseDownOutside={() => setShowMenu(false)}>
-          <div>
+          <div className="max-w-[224px]">
             <ul>
               <li>
                 <KButton
@@ -89,7 +89,7 @@ function BoardMenu({
                   onUpload={handleAttachImageToBoard}
                 />
               </li>
-              <li>
+              <li className="mt-0.5">
                 <AppLabelsPicker 
                   labels={labels}
                   selected={selectedLabels}

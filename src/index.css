@@ -9,3 +9,19 @@
         cursor: pointer;
     }
 }
+
+:root {
+    --tw-screen-sm: 640px;
+    --tw-screen-md: 768px;
+    --tw-screen-lg: 1024px;
+    --tw-screen-xl: 1280px;
+    --tw-screen-2xl: 1536px;
+}
+
+.task-dialog .k-dialog {
+    @apply md:max-h-[96dvh] md:max-w-[96dvw];
+}
+
+.k-window-actions {
+    margin: 0;
+}
