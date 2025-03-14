@@ -1,6 +1,8 @@
-# React + TypeScript + Vite
+# saas-project-management-tool-react
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Site: https://saas-project-management-tool-react.vercel.app
+Email: jbond@gmail.com
+Password: Forge123
 
 Currently, two official plugins are available:
 

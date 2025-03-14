@@ -25,7 +25,7 @@ installTwicpics( {
   domain: `${import.meta.env.VITE_TWICPICS_URL}`
 } );
 
-const authPages = ["/login"];
+const authPages = ["/login", "/logout"];
 const commonPages = ["/auth/callback"];
 
 function App() {
@@ -45,11 +45,10 @@ function App() {
     const idUser = localStorage.getItem("id_user");
 
     if (!idToken || !idUser) {
-      if (!authPages.includes(location.pathname)) navigate("/login");
-    } else {
-      if (authPages.includes(location.pathname) || location.pathname === "/") {
-        navigate("/boards");
-      }
+      if (!authPages.includes(location.pathname)) 
+        navigate("/login");
+    } else if (authPages.includes(location.pathname) || location.pathname === "/") {
+      navigate("/boards");
     }
   }, [isAuthenticated, location, navigate]);
 
