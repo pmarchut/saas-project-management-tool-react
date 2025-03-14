@@ -133,21 +133,31 @@ function TaskItem() {
                 dialog.style.top = "0";
                 dialog.style.width = `${viewport.width}px`;
                 dialog.style.height = `${viewport.height}px`;
-            } else if (dialog && app) {
+            } else if (app) {
                 app.style.overflow = "";
-                dialog.style.position = "";
-                dialog.style.left = "";
-                dialog.style.top = "";
-                dialog.style.width = "";
-                dialog.style.height = "";
+
+                if (dialog) {
+                    dialog.style.position = "";
+                    dialog.style.left = "";
+                    dialog.style.top = "";
+                    dialog.style.width = "";
+                    dialog.style.height = "";
+                }
             } 
         }
 
         setTimeout(() => {
             updateDialogPosition(); 
         }, 400)
-    }, [breakpoint]); // Wywołuje `updateDialogPosition` przy każdej zmianie `breakpoint`
 
+        return () => {
+            const app = document.getElementById("root") as HTMLElement;
+            if (app) {
+                app.style.overflow = "";
+            }
+        }
+    }, [breakpoint]); // Wywołuje `updateDialogPosition` przy każdej zmianie `breakpoint`
+    
     return (
         <div>
             {loading &&
