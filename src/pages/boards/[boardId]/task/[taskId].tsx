@@ -156,6 +156,7 @@ function TaskItem() {
                 <KDialog
                     title={taskResult?.task?.title}
                     onClose={onCloseClicked}
+                    autoFocus={true}
                     className="task-dialog"
                     id="task-dialog"
                 >
